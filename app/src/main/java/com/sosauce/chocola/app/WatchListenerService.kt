@@ -27,6 +27,7 @@ class WatchListenerService : WearableListenerService(), KoinComponent {
             }.onSuccess(watchBridge::execute)
 
             WatchContract.PATH_SEEK -> payload.toLongOrNull()?.let(watchBridge::seekTo)
+            WatchContract.PATH_ARTWORK -> watchBridge.sendArtwork(payload)
         }
     }
 }

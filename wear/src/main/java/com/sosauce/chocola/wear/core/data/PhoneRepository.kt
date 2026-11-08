@@ -3,6 +3,7 @@ package com.sosauce.chocola.wear.core.data
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.util.LruCache
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import com.google.android.gms.wearable.Asset
@@ -22,9 +23,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
+import kotlin.time.Duration.Companion.seconds
 
 data class PhonePlayer(
     val state: WatchPlayerState = WatchPlayerState(),
@@ -38,6 +43,7 @@ class PhoneRepository(
     private val dataClient = Wearable.getDataClient(context)
     private val messageClient = Wearable.getMessageClient(context)
     private val capabilityClient = Wearable.getCapabilityClient(context)
+    private val artworkCache = LruCache<String, ImageBitmap>(ARTWORK_CACHE_SIZE)
 
     fun library(): Flow<WatchLibrary> = dataItems(WatchContract.PATH_LIBRARY) { dataMap ->
         dataMap.getAsset(WatchContract.KEY_LIBRARY)
@@ -78,6 +84,21 @@ class PhoneRepository(
     suspend fun seekTo(position: Long) =
         send(WatchContract.PATH_SEEK, position.toString().encodeToByteArray())
 
+    suspend fun artwork(mediaId: String): ImageBitmap? = withContext(Dispatchers.IO) {
+        artworkCache.get(mediaId)?.let { return@withContext it }
+
+        val path = "${WatchContract.PATH_ARTWORK}/$mediaId"
+        val dataMap = dataMap(path) ?: run {
+            send(WatchContract.PATH_ARTWORK, mediaId.encodeToByteArray())
+            withTimeoutOrNull(20.seconds) { dataItems(path) { it }.first() }
+        }
+
+        dataMap?.getAsset(WatchContract.KEY_ARTWORK)
+            ?.let { readAsset(it) }
+            ?.let { BitmapFactory.decodeByteArray(it, 0, it.size)?.asImageBitmap() }
+            ?.also { artworkCache.put(mediaId, it) }
+    }
+
     private suspend fun send(path: String, data: ByteArray): Boolean {
         val node = phoneNode() ?: return false
         return runCatching { messageClient.sendMessage(node.id, path, data).await() }.isSuccess
@@ -99,7 +120,7 @@ class PhoneRepository(
         path: String,
         transform: suspend (DataMap) -> T?
     ): Flow<T> = callbackFlow {
-        val uri = Uri.Builder().scheme("wear").authority("*").path(path).build()
+        val uri = dataItemUri(path)
 
         val listener = DataClient.OnDataChangedListener { events ->
             val dataMap = events
@@ -112,12 +133,22 @@ class PhoneRepository(
         }
         dataClient.addListener(listener, uri, DataClient.FILTER_LITERAL)
 
-        runCatching { dataClient.getDataItems(uri).await() }.getOrNull()?.let { buffer ->
-            val dataMap = buffer.map { DataMapItem.fromDataItem(it).dataMap }.lastOrNull()
-            buffer.release()
-            dataMap?.let { transform(it) }?.let { send(it) }
-        }
+        dataMap(path)?.let { transform(it) }?.let { send(it) }
 
         awaitClose { dataClient.removeListener(listener) }
     }.flowOn(Dispatchers.IO)
+
+    private suspend fun dataMap(path: String): DataMap? =
+        runCatching { dataClient.getDataItems(dataItemUri(path)).await() }.getOrNull()?.let { buffer ->
+            val dataMap = buffer.map { DataMapItem.fromDataItem(it).dataMap }.lastOrNull()
+            buffer.release()
+            dataMap
+        }
+
+    private fun dataItemUri(path: String): Uri =
+        Uri.Builder().scheme("wear").authority("*").path(path).build()
+
+    companion object {
+        private const val ARTWORK_CACHE_SIZE = 96
+    }
 }

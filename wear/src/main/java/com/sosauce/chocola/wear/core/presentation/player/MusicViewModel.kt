@@ -52,6 +52,8 @@ class MusicViewModel(
         MusicState()
     )
 
+    suspend fun artwork(mediaId: String) = phoneRepository.artwork(mediaId)
+
     fun handlePlayerActions(action: PlayerActions) {
         viewModelScope.launch {
             when (action) {

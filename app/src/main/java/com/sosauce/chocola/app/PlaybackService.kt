@@ -250,11 +250,15 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
     @UnstableApi
     override fun onCreate() {
         super.onCreate()
-        val player: Player = ExoPlayer.Builder(applicationContext)
-            .setDeviceVolumeControlEnabled(true)
-            .setHandleAudioBecomingNoisy(true)
-            .setAudioAttributes(audioAttributes, true)
-            .build()
+        val player: Player = EmbeddedArtworkPlayer(
+            ExoPlayer.Builder(applicationContext)
+                .setDeviceVolumeControlEnabled(true)
+                .setHandleAudioBecomingNoisy(true)
+                .setAudioAttributes(audioAttributes, true)
+                .build(),
+            applicationContext,
+            lifecycleScope
+        )
         mediaLibrarySession = MediaLibrarySession
             .Builder(this, player, callback)
             .setId(CUTE_MUSIC_ID)

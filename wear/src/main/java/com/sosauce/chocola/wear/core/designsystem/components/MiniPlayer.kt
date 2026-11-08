@@ -10,6 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ImageBitmap
 import com.sosauce.chocola.shared.WatchPlayerState
 import com.sosauce.chocola.wear.R
 import com.sosauce.chocola.wear.core.domain.player.PlayerActions
@@ -19,6 +20,7 @@ import com.sosauce.nekobites.animations.AnimatedDrawableFile
 @Composable
 fun MiniPlayer(
     player: WatchPlayerState,
+    artwork: ImageBitmap?,
     onClick: () -> Unit,
     onHandlePlayerActions: (PlayerActions) -> Unit,
     modifier: Modifier = Modifier
@@ -32,6 +34,7 @@ fun MiniPlayer(
         leadingContent = {
             TrackArtwork(
                 icon = R.drawable.music_note,
+                artwork = artwork,
                 tint = MaterialTheme.colorScheme.primary
             )
         },

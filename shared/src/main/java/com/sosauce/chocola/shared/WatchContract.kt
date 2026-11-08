@@ -13,10 +13,12 @@ object WatchContract {
     const val PATH_PLAY = "/chocola/play"
     const val PATH_COMMAND = "/chocola/command"
     const val PATH_SEEK = "/chocola/seek"
+    const val PATH_ARTWORK = "/chocola/artwork"
 
     const val KEY_LIBRARY = "library"
     const val KEY_PLAYER = "player"
     const val KEY_ARTWORK = "artwork"
+    const val KEY_MEDIA_ID = "mediaId"
 
     val json = Json {
         ignoreUnknownKeys = true

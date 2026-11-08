@@ -3,11 +3,13 @@
 package com.sosauce.chocola.wear.feature.nowplaying
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.focusable
@@ -40,9 +42,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.rotary.onRotaryScrollEvent
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -113,6 +118,24 @@ fun NowPlayingScreen(
                 icon = R.drawable.music_note
             )
             return@ScreenScaffold
+        }
+
+        Crossfade(
+            targetState = state.artwork,
+            modifier = Modifier.fillMaxSize()
+        ) { artwork ->
+            if (artwork != null) {
+                Image(
+                    bitmap = artwork,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    colorFilter = ColorFilter.tint(
+                        MaterialTheme.colorScheme.background.copy(alpha = 0.7f),
+                        BlendMode.SrcOver
+                    ),
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
         }
 
         PlaybackRing(

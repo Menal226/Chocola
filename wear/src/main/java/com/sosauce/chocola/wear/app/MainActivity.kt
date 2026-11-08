@@ -32,7 +32,8 @@ class MainActivity : ComponentActivity() {
                 AppScaffold {
                     Navigation(
                         state = state,
-                        onHandlePlayerActions = viewModel::handlePlayerActions
+                        onHandlePlayerActions = viewModel::handlePlayerActions,
+                        onLoadArtwork = viewModel::artwork
                     )
                 }
             }

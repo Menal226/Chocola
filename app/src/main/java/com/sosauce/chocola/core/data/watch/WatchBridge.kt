@@ -9,6 +9,7 @@ import android.os.Build
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.util.fastFilter
+import androidx.compose.ui.util.fastFirstOrNull
 import androidx.compose.ui.util.fastMap
 import androidx.media3.common.C
 import androidx.media3.common.Player
@@ -247,22 +248,39 @@ class WatchBridge(
             player?.currentMediaItem?.takeIf { it.mediaId == mediaId }?.mediaMetadata?.artworkUri
         }
 
+        val asset = loadArtwork(artUri, ARTWORK_SIZE)
+        artwork = mediaId to asset
+        return asset
+    }
+
+    fun sendArtwork(mediaId: String) {
+        ioScope.launch {
+            val artUri = latestTracks().fastFirstOrNull { it.mediaId == mediaId }?.artUri
+            val asset = artUri?.let { loadArtwork(it, THUMBNAIL_SIZE) }
+
+            val request = PutDataMapRequest.create("${WatchContract.PATH_ARTWORK}/$mediaId").apply {
+                dataMap.putString(WatchContract.KEY_MEDIA_ID, mediaId)
+                asset?.let { dataMap.putAsset(WatchContract.KEY_ARTWORK, it) }
+            }.asPutDataRequest().setUrgent()
+
+            runCatching { dataClient.putDataItem(request).await() }
+        }
+    }
+
+    private suspend fun loadArtwork(data: Any?, size: Int): Asset? {
         val request = ImageRequest.Builder(context)
-            .data(artUri)
-            .size(ARTWORK_SIZE)
+            .data(data)
+            .size(size)
             .allowHardware(false)
             .build()
 
-        val asset = runCatching {
+        return runCatching {
             context.imageLoader.execute(request).image?.toBitmap()?.let { bitmap ->
                 val stream = ByteArrayOutputStream()
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 85, stream)
                 Asset.createFromBytes(stream.toByteArray())
             }
         }.getOrNull()
-
-        artwork = mediaId to asset
-        return asset
     }
 
     private suspend fun publishLibrary(tracks: List<CuteTrack>) {
@@ -349,5 +367,6 @@ class WatchBridge(
 
     companion object {
         private const val ARTWORK_SIZE = 320
+        private const val THUMBNAIL_SIZE = 128
     }
 }

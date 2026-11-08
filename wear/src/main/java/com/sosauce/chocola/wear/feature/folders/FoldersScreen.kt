@@ -85,6 +85,7 @@ fun FoldersScreen(
                     item {
                         MiniPlayer(
                             player = state.player,
+                            artwork = state.artwork,
                             onClick = onNavigateToNowPlaying,
                             onHandlePlayerActions = onHandlePlayerActions,
                             modifier = Modifier.listItemTransformation(this, transformationSpec)

@@ -1,6 +1,7 @@
 package com.sosauce.chocola.wear.core.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -16,7 +17,8 @@ import com.sosauce.chocola.wear.feature.nowplaying.NowPlayingScreen
 @Composable
 fun Navigation(
     state: MusicState,
-    onHandlePlayerActions: (PlayerActions) -> Unit
+    onHandlePlayerActions: (PlayerActions) -> Unit,
+    onLoadArtwork: suspend (String) -> ImageBitmap?
 ) {
     val backStack = rememberNavBackStack(Screen.Folders)
     val navigateToNowPlaying = {
@@ -45,6 +47,7 @@ fun Navigation(
                     folder = state.folders.find { it.path == screen.path },
                     player = state.player,
                     onHandlePlayerActions = onHandlePlayerActions,
+                    onLoadArtwork = onLoadArtwork,
                     onNavigateToNowPlaying = navigateToNowPlaying
                 )
             }
