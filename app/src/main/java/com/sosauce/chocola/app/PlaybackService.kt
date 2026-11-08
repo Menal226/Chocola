@@ -38,6 +38,7 @@ import com.sosauce.chocola.core.data.audio.EqualizerManager
 import com.sosauce.chocola.core.data.auto.AndroidAutoHelper
 import com.sosauce.chocola.core.data.bakery.PlaybackSnapshot
 import com.sosauce.chocola.core.data.bakery.StatsRecorder
+import com.sosauce.chocola.core.data.watch.WatchBridge
 import com.sosauce.chocola.core.designsystem.CUTE_MUSIC_ID
 import com.sosauce.chocola.core.presentation.util.playOrPause
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -56,6 +57,7 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
     private val equalizerManager by inject<EqualizerManager>()
     private val androidAutoHelper by inject<AndroidAutoHelper>()
     private val widgetsHelper by inject<WidgetsHelper>()
+    private val watchBridge by inject<WatchBridge>()
 
     private val statsRecorder by inject<StatsRecorder>()
     private val audioAttributes = AudioAttributes
@@ -274,6 +276,7 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
         )
 
         player.addListener(listener)
+        watchBridge.attach(player)
 
         keepAliveJob = lifecycleScope.launch {
             applicationContext.dataStore.data
@@ -290,6 +293,7 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
         keepAliveJob = null
         statsRecorder.release()
         equalizerManager.releaseDynamicsProcessing()
+        watchBridge.detach()
         mediaLibrarySession?.let {
             it.player.removeListener(listener)
             it.player.release()
@@ -309,6 +313,7 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
         }
         statsRecorder.onPlaybackEnded()
         equalizerManager.releaseDynamicsProcessing()
+        watchBridge.detach()
         mediaLibrarySession?.let {
             it.player.removeListener(listener)
             it.player.release()

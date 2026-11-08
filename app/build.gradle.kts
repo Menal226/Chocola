@@ -141,6 +141,9 @@ dependencies {
     implementation(libs.haze.blur.materials)
     implementation(libs.haze.blur.material3)
     implementation("com.github.sosauce:nekobites:2.0.0")
+    implementation(project(":shared"))
+    implementation(libs.play.services.wearable)
+    implementation(libs.kotlinx.coroutines.play.services)
 
 }
 

@@ -22,3 +22,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "Chocola"
 include(":app")
+include(":shared")
+include(":wear")

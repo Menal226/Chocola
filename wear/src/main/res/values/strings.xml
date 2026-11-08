@@ -1,0 +1,5 @@
+<resources>
+    <string name="watch_phone_disconnected">Phone not connected</string>
+    <string name="watch_phone_disconnected_desc">Make sure Chocola is installed on your phone and the watch is connected</string>
+    <string name="watch_nothing_playing">Nothing is playing</string>
+</resources>

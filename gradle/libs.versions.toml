@@ -40,6 +40,10 @@ material3 = "1.5.0-rc01"
 nav3Core = "1.2.1"
 lifecycleViewmodelNav3 = "2.11.0"
 foundation = "1.12.1"
+playServicesWearable = "20.0.1"
+coroutinesPlayServices = "1.11.0"
+wearCompose = "1.7.1"
+wearInput = "1.2.0"
 
 
 
@@ -90,6 +94,13 @@ androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runt
 androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "nav3Core" }
 androidx-lifecycle-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycleViewmodelNav3" }
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
+play-services-wearable = { module = "com.google.android.gms:play-services-wearable", version.ref = "playServicesWearable" }
+kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "coroutinesPlayServices" }
+androidx-wear-compose-material3 = { module = "androidx.wear.compose:compose-material3", version.ref = "wearCompose" }
+androidx-wear-compose-foundation = { module = "androidx.wear.compose:compose-foundation", version.ref = "wearCompose" }
+androidx-wear-compose-navigation3 = { module = "androidx.wear.compose:compose-navigation3", version.ref = "wearCompose" }
+androidx-wear-compose-ui-tooling = { module = "androidx.wear.compose:compose-ui-tooling", version.ref = "wearCompose" }
+androidx-wear-input = { module = "androidx.wear:wear-input", version.ref = "wearInput" }
 
 
 
@@ -97,6 +108,7 @@ androidx-compose-foundation = { group = "androidx.compose.foundation", name = "f
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
+androidLibrary = { id = "com.android.library", version.ref = "agp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "serialization"}
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

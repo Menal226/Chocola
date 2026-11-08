@@ -15,6 +15,7 @@ import com.sosauce.chocola.core.data.widgets.WidgetsHelper
 import com.sosauce.chocola.core.data.audio.EqualizerManager
 import com.sosauce.chocola.core.data.auto.AndroidAutoHelper
 import com.sosauce.chocola.core.data.library.FoldersClassifier
+import com.sosauce.chocola.core.data.watch.WatchBridge
 import com.sosauce.chocola.core.presentation.player.MusicViewModel
 import com.sosauce.chocola.core.presentation.components.dialogs.DeletionViewModel
 import com.sosauce.chocola.core.presentation.components.dialogs.tracksDetails.TracksDetailsDialogViewModel
@@ -73,6 +74,7 @@ val appModule = module {
     singleOf(::WidgetsHelper)
     singleOf(::PlaylistCleanup)
     singleOf(::FoldersClassifier)
+    singleOf(::WatchBridge)
 
 
 
