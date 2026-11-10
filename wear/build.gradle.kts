@@ -72,8 +72,8 @@ android {
         applicationId = "com.sosauce.cutemusic"
         minSdk = 30
         targetSdk = 37
-        versionCode = 50014
-        versionName = "4.4.6"
+        versionCode = 50015
+        versionName = "4.5.0"
     }
 
     signingConfigs {
@@ -150,6 +150,6 @@ dependencies {
     implementation(libs.material.kolor)
     implementation(libs.kmpalette.core)
     implementation(libs.squircle.shape)
-    implementation("com.github.sosauce:nekobites:2.0.0")
+    implementation(libs.sosauce.nekobites)
     debugImplementation(libs.androidx.wear.compose.ui.tooling)
 }
